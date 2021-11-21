@@ -1,13 +1,16 @@
 <template>
   <div class="default-container">
-    <div id="defaultMap" class="default-map"></div>
+    <div id="defaultMap"></div>
     <div class="enter-area">
-      <div class="enter-image mt-180" v-if="showCheck" @click="showFlag">
+      <div class="enter-image mt-180">
         <img alt="Enter Picture" src="../assets/images/svg/enter.svg">
           <p>LET’SGO CYCLING!</p>
       </div>
-      <div class="enter-post mt-75" v-else>
-        <h1 class="mb-36">功能尚未完成，會在之後補其功能 2021 11/22 BY Nofly翔</h1>
+      <div class="enter-post mt-75">
+        <p class="mb-36">身邊很多朋友都在有在騎自行車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，
+          常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，
+          常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，
+          常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車！</p>
         <p class="mb-36">身邊很多朋友都在有在騎自行車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，
           常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，
           常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，常常看到他們一起出去騎車，
@@ -20,10 +23,12 @@
 </template>
 
 <style scoped lang="scss">
+@import '@/assets/scss/globel_variable.scss';
+@import '@/assets/scss/globel_public_style.scss';
   .default-container {
-    position: relative;
     width: 100%;
     height: 100vh;
+    background-color: #bbb;
   }
   .enter-area {
     box-sizing: border-box;
@@ -31,7 +36,6 @@
     display: flex;
     justify-content: center;
     padding-bottom: 75px;
-    background-color: rgba($color: #000000, $alpha: 0.7);
   }
   .enter-image {
     width: min-content;
@@ -53,6 +57,7 @@
     }
   }
   .enter-post {
+    display: none;
     width: 670px;
     background-color: $light;
     padding: 100px 50px 50px;
@@ -62,37 +67,11 @@
       letter-spacing: 5px;
     }
   }
-  .default-map {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-  }
 </style>
 
 <script>
 // @ is an alias to /src
-import L from 'leaflet';
 
 export default {
-  data() {
-    return {
-      mapObject: {},
-      mapLayer: {},
-      showCheck: true,
-    };
-  },
-  methods: {
-    showFlag() {
-      this.showCheck = false;
-    },
-  },
-  mounted() {
-    this.mapObject = L.map('defaultMap', {
-      center: [22.6561314, 120.2984205],
-      zoom: 14,
-    });
-    this.mapLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.mapObject);
-  },
 };
 </script>

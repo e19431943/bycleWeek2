@@ -1,12 +1,14 @@
 <template>
   <div class="wrep">
     <div class="nav">
-      <h1 class="logo nav-item">
-        <div>
-          <img src="@/assets/images/svg/logo.svg" alt="logo">
-        </div>
-      </h1>
-      <router-link to="/" class="nav-item">
+       <router-link to="/">
+        <h1 class="logo nav-item">
+          <div>
+            <img src="@/assets/images/svg/logo.svg" alt="logo">
+          </div>
+        </h1>
+       </router-link>
+      <router-link to="/lease" class="nav-item">
         <div>
           <img src="@/assets/images/svg/search.svg" alt="單車租借 ICON">
         </div>
@@ -31,15 +33,37 @@
   </div>
 </template>
 
+<script>
+// import L from 'leaflet';
+
+// export default {
+//   data() {
+//     return {
+//       mapObject: {},
+//       mapLayer: {},
+//     };
+//   },
+//   mounted() {
+//     this.mapObject = L.map('leaseMap', {
+//       center: [22.6561314, 120.2984205],
+//       zoom: 14,
+//     });
+//     this.mapLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.mapObject);
+//   },
+// };
+</script>
+
 <style lang="scss">
 @import 'reset-css';
-@import '@/assets/scss/globel_variable.scss';
+@import '~leaflet/dist/leaflet.css';
+// @import '@/assets/scss/globel_variable.scss';
+@import '@/assets/scss/globel_public_style.scss';
 
 .wrep {
   width: 1440px;
   height: 100vh;
   margin: 0 auto;
-  background-color: $grey;
+  // background-color: $grey;
   display: flex;
 }
 .nav {
