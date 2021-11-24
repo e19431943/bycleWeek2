@@ -10,12 +10,12 @@
        </router-link>
       <router-link to="/lease" class="nav-item">
         <div>
-          <img src="@/assets/images/svg/search.svg" alt="單車租借 ICON">
+          <img src="@/assets/images/svg/position.svg" alt="單車租借 ICON">
         </div>
       </router-link>
       <router-link to="/" class="nav-item">
         <div>
-          <img src="@/assets/images/svg/position.svg" alt="關鍵字搜尋 ICON">
+          <img src="@/assets/images/svg/search.svg" alt="關鍵字搜尋 ICON">
         </div>
       </router-link>
       <router-link to="/" class="nav-item">
