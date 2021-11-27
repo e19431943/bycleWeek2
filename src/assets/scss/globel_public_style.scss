@@ -1,6 +1,114 @@
+/*my div icon*/
+.my-div-icon {
+  position: relative;
+}
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 58px;
+  height: 56px;
+}
+.icon-text {
+	position: absolute;
+	z-index: 2;
+	font-size: 16px ;
+  font-weight: 900;
+}
+.lease-text {
+  color: #000000;
+}
+.return-text {
+  color: #1DFFFF;
+}
+.my-popup {
+  box-sizing: border-box;
+  display: none;
+  width: 328px;
+  height: 320px;
+  padding: 24px;
+  position: absolute;
+  z-index: 900;
+  top: 87px;
+  right: 275px;
+  background-color: #fff;
+  color: #4E4E4E;
+}
+.popup-container {
+  position: absolute;
+}
+.popup-show {
+  display: block;
+}
+/*popup card*/
+.popup-state {
+  display: flex;
+  span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: #1DFFFF;
+  }
+  p {
+    font-size: 12px;
+  }
+}
+.popup-title {
+  h3 {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  p {
+    font-size: 12px;
+    color: #A6A6A6;
+  }
+}
+.popup-address {
+  font-size: 12px;
+  .address-english {
+    color: #A6A6A6;
+  }
+}
+.popup-update-time {
+  font-size: 12px;
+  color: #A6A6A6;
+}
+.popup-content {
+  display: flex;
+  justify-content: space-between;
+  .popup-content-item {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 125px;
+    padding: 24px;
+    border-radius: 5px;
+    background-color: #aaa;
+    .popup-content-title {
+      font-size: 19px;
+      font-weight: 700;
+    }
+    .popup-content-value {
+      font-size: 36px;
+      font-weight: 700;
+    }
+  }
+}
 
 .mb-36 {
   margin-bottom: 36px;
+}
+.mb-19 {
+  margin-bottom: 19px;
+}
+.mb-16 {
+  margin-bottom: 16px;
+}
+.mb-12 {
+  margin-bottom: 12px;
 }
 .mt-180 {
   margin-top: 180px;

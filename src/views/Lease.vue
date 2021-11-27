@@ -5,15 +5,17 @@
       <button
         class="lease-control-item lease-button"
         data-value="lease" @click="chooseButton"
-        :class = "defaultFlag? 'default-focus' : ''"
+        :class = "defaultFlag? 'choosed-button' : ''"
       >租車</button>
       <button
         class="lease-control-item return-button"
         data-value="return"
         @click="chooseButton"
+        :class = "!defaultFlag? 'choosed-button' : ''"
       >還車</button>
     </div>
   </div>
+  <div class="my-popup"></div>
 </template>
 
 <style lang="scss" scoped>
@@ -47,11 +49,6 @@
   &:hover {
     outline: $primary solid 5px;
   }
-  &:focus {
-    background-color: $primary;
-    color: $secondary;
-    outline: $secondary solid 5px;
-  }
 }
 .lease-button {
   border-radius: 10px 0 0 10px;
@@ -59,11 +56,27 @@
 .return-button {
   border-radius: 0px 10px 10px 0px;
 }
-.default-focus {
+.choosed-button {
   background-color: $primary;
   color: $secondary;
   outline: $secondary solid 5px;
 }
+
+// .my-div-icon {
+// }
+
+// .icon-image {
+//   position: absolute;
+//   width: 100%;
+//   height: 100%;
+//   z-index: 1;
+// }
+// .icon-text {
+//   position: absolute;
+//   z-index: 2;
+//   font-size: 16px ;
+// }
+
 </style>
 
 <script>
@@ -83,32 +96,18 @@ export default {
       defaultFlag: true,
       markerGroup: {},
       leaseData: [],
-      leaseMarkar: {
-        iconUrl: leaseUrl,
-        iconSize: [58, 56],
-        iconAnchor: [22, 94],
-        popupAnchor: [-3, -76],
-      },
-      returnMarkar: {
-        iconUrl: returnUrl,
-        iconSize: [58, 56],
-        iconAnchor: [22, 94],
-        popupAnchor: [-3, -76],
-      },
+      iconDetail: {},
     };
   },
   watch: {
-    leaseData(data) {
+    leaseData() {
+      this.iconDetail = {
+        url: leaseUrl,
+        type: 'lease',
+      };
       /* data更新後觸發，可以寫作reset */
       console.log(123);
-      data.forEach((item) => {
-        this.markerGroup.addLayer(
-          L.marker(
-            [item.StationPosition.PositionLat, item.StationPosition.PositionLon],
-            { icon: L.icon(this.leaseMarkar) },
-          ),
-        ).addTo(this.mapObject);
-      });
+      this.markarProcess(this.iconDetail);
     },
   },
   methods: {
@@ -157,23 +156,122 @@ export default {
       this.leaseData = await getLocationData(lat, long);
     },
     chooseButton(e) {
-      this.defaultFlag = false;
       const chooseValue = e.target.dataset.value;
+      const tempObject = {};
+      this.defaultFlag = !this.defaultFlag;
+      tempObject.type = chooseValue;
       if (chooseValue === 'lease') {
-        this.markarProcess(this.leaseMarkar);
+        tempObject.url = leaseUrl;
       } else {
-        this.markarProcess(this.returnMarkar);
+        tempObject.url = returnUrl;
       }
+      this.iconDetail = tempObject;
+      this.markarProcess();
     },
-    markarProcess(icon) {
+    markarProcess() {
+      this.markerGroup.clearLayers();
       this.leaseData.forEach((item) => {
         this.markerGroup.addLayer(
           L.marker(
             [item.StationPosition.PositionLat, item.StationPosition.PositionLon],
-            { icon: L.icon(icon) },
-          ).bindPopup('A pretty CSS3 popup.<br> Easily customizable.').openPopup(),
+            { icon: this.createIcon(this.iconDetail, item) },
+          ),
         ).addTo(this.mapObject);
       });
+      this.addMarkarEvent();
+    },
+    addMarkarEvent() {
+      const markar = document.querySelectorAll('.icon-container');
+      markar.forEach((item) => {
+        item.addEventListener('click', this.popupPrecess);
+      });
+    },
+    test(e) {
+      const latLog = [Number(e.currentTarget.dataset.lat), Number(e.currentTarget.dataset.long)];
+      console.log('test', latLog);
+      L.popup({
+        className: 'main-popup',
+        closeButton: false,
+      })
+        .setLatLng(latLog)
+        .setContent('<p>Hello world!<br />This is a nice popup.</p>')
+        .openOn(this.mapObject);
+    },
+    createIcon(icon, item) {
+      // console.log(icon);
+      let iconText;
+      let textColor;
+      if (icon.type === 'lease') {
+        iconText = item.state.AvailableRentBikes;
+        textColor = 'lease-text';
+      } else {
+        iconText = item.state.AvailableReturnBikes;
+        textColor = 'return-text';
+      }
+      const res = L.divIcon(
+        {
+          className: 'my-div-icon',
+          html: `
+            <div class="icon-container" data-id="${item.StationUID}" data-lat="${item.StationPosition.PositionLat}" data-long="${item.StationPosition.PositionLon}">
+              <img class="icon-image" src="${icon.url}"></img>
+              <span class="icon-text ${textColor}">${iconText}</span>
+            </div>
+          `,
+        },
+      );
+      return res;
+    },
+    popupPrecess(e) {
+      this.resetPopup();
+      console.log('popupEvent', e.currentTarget.lastElementChild);
+      const markarId = e.currentTarget.dataset.id;
+      // const popup = e.currentTarget.lastElementChild;
+      const popup = document.querySelector('.my-popup');
+      for (let i = 0; i < this.leaseData.length; i += 1) {
+        // console.log('this', this.leaseData[i].StationUID, 'check:', markarId);
+        if (this.leaseData[i].StationUID === markarId) {
+          console.log('success');
+          popup.innerHTML = this.getDetailCard(this.leaseData[i]);
+          popup.classList.add('popup-show');
+          break;
+        }
+      }
+      console.log('fin', popup.classList);
+    },
+    resetPopup() {
+      const popups = document.querySelectorAll('.popup-container');
+      popups.forEach((item) => {
+        item.classList.remove('popup-show');
+      });
+    },
+    getDetailCard(data) {
+      let str = '';
+      str += `
+        <div class="popup-state mb-12">
+          <span></span>
+          <p>正常營運</p>
+        </div>
+        <div class="popup-title mb-12">
+          <h3>${data.StationName.Zh_tw}</h3>  
+          <p>${data.StationName.En}</p>
+        </div>
+        <div class="popup-address mb-16">
+          <p class="address-chinese">${data.StationAddress.Zh_tw}</p>
+          <p class="address-english">${data.StationAddress.En}</p>
+        </div>
+        <p class="popup-update-time mb-19">${data.SrcUpdateTime}</p>
+        <div class="popup-content">
+          <div class="popup-content-item">
+            <p class="popup-content-title">可借車輛</p>
+            <p class="popup-content-value">${data.state.AvailableRentBikes}</p>
+          </div>
+          <div class="popup-content-item">
+            <p class="popup-content-title">可停車位</p>
+            <p class="popup-content-value">${data.state.AvailableReturnBikes}</p>
+          </div>
+        </div>
+      `;
+      return str;
     },
   },
   mounted() {
