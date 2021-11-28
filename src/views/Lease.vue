@@ -91,12 +91,19 @@ export default {
     return {
       mapObject: {},
       mapLayer: {},
+      mapContainer: {},
       locationLog: '',
       locationLat: '',
       defaultFlag: true,
       markerGroup: {},
       leaseData: [],
       iconDetail: {},
+      bikeState: {
+        0: '停止營運',
+        1: '正常營運',
+        2: '暫停營運',
+      },
+      popup: {},
     };
   },
   watch: {
@@ -166,6 +173,8 @@ export default {
         tempObject.url = returnUrl;
       }
       this.iconDetail = tempObject;
+      this.popup.innerHTML = '';
+      this.popup.classList.remove('popup-show');
       this.markarProcess();
     },
     markarProcess() {
@@ -185,17 +194,6 @@ export default {
       markar.forEach((item) => {
         item.addEventListener('click', this.popupPrecess);
       });
-    },
-    test(e) {
-      const latLog = [Number(e.currentTarget.dataset.lat), Number(e.currentTarget.dataset.long)];
-      console.log('test', latLog);
-      L.popup({
-        className: 'main-popup',
-        closeButton: false,
-      })
-        .setLatLng(latLog)
-        .setContent('<p>Hello world!<br />This is a nice popup.</p>')
-        .openOn(this.mapObject);
     },
     createIcon(icon, item) {
       // console.log(icon);
@@ -222,34 +220,49 @@ export default {
       return res;
     },
     popupPrecess(e) {
-      this.resetPopup();
-      console.log('popupEvent', e.currentTarget.lastElementChild);
+      // this.resetPopup();
+      console.log('popupEvent', e.currentTarget);
       const markarId = e.currentTarget.dataset.id;
       // const popup = e.currentTarget.lastElementChild;
-      const popup = document.querySelector('.my-popup');
+      this.popup = document.querySelector('.my-popup');
       for (let i = 0; i < this.leaseData.length; i += 1) {
         // console.log('this', this.leaseData[i].StationUID, 'check:', markarId);
         if (this.leaseData[i].StationUID === markarId) {
           console.log('success');
-          popup.innerHTML = this.getDetailCard(this.leaseData[i]);
-          popup.classList.add('popup-show');
+          this.popup.innerHTML = this.getDetailCard(this.leaseData[i]);
+          this.popup.classList.add('popup-show');
+          this.clearPopupEvent();
           break;
         }
       }
-      console.log('fin', popup.classList);
     },
-    resetPopup() {
-      const popups = document.querySelectorAll('.popup-container');
-      popups.forEach((item) => {
-        item.classList.remove('popup-show');
-      });
+    clearPopupEvent() {
+      this.mapContainer = document.querySelector('#leaseMap');
+      this.mapContainer.addEventListener('click', this.clearPopupProcess);
+    },
+    clearPopupProcess(e) {
+      if (e.target === this.mapContainer) {
+        this.popup.innerHTML = '';
+        this.popup.classList.remove('popup-show');
+        this.mapContainer.removeEventListener('click', this.clearPopupProcess);
+      }
     },
     getDetailCard(data) {
+      let leaseColor;
+      let returnColor;
+      if (this.iconDetail.type === 'lease') {
+        leaseColor = 'popup-choose-color';
+        returnColor = 'popup-default-color';
+      } else {
+        leaseColor = 'popup-default-color';
+        returnColor = 'popup-choose-color';
+      }
+      const stateText = this.bikeState[data.state.ServiceStatus];
       let str = '';
       str += `
         <div class="popup-state mb-12">
           <span></span>
-          <p>正常營運</p>
+          <p>${stateText}</p>
         </div>
         <div class="popup-title mb-12">
           <h3>${data.StationName.Zh_tw}</h3>  
@@ -261,11 +274,11 @@ export default {
         </div>
         <p class="popup-update-time mb-19">${data.SrcUpdateTime}</p>
         <div class="popup-content">
-          <div class="popup-content-item">
+          <div class="popup-content-item ${leaseColor}">
             <p class="popup-content-title">可借車輛</p>
             <p class="popup-content-value">${data.state.AvailableRentBikes}</p>
           </div>
-          <div class="popup-content-item">
+          <div class="popup-content-item ${returnColor}">
             <p class="popup-content-title">可停車位</p>
             <p class="popup-content-value">${data.state.AvailableReturnBikes}</p>
           </div>
